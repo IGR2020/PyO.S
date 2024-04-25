@@ -3,7 +3,7 @@ import os
 
 def load_data(path):
     with open(path, "rb") as file:
-        data = pickle.load(path)
+        data = pickle.load(file)
         file.close()
     return data
 

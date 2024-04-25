@@ -15,21 +15,25 @@ def blit_text(
     return text_surface
 
 
-class Button:
-    def __init__(self, pos, image, scale=1):
+class Button(pygame.Rect):
+    def __init__(self, pos, image, scale=1, *args):
         x, y = pos
         width, height = image.get_width() * scale, image.get_height() * scale
-        self.rect = pygame.Rect(x, y, width, height)
+        super().__init__(x, y, width, height)
         self.image = pygame.transform.scale(image, (width, height))
+        if len(args) == 1:
+            self.info = args[0]
+        else:
+            self.info = args
 
     def clicked(self):
         pos = pygame.mouse.get_pos()
-        if self.rect.collidepoint(pos):
+        if self.collidepoint(pos):
             return True
         return False
 
     def display(self, win):
-        win.blit(self.image, self.rect)
+        win.blit(self.image, self)
 
 
 def load_assets(path, size: int = None):

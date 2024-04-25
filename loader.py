@@ -17,3 +17,6 @@ ICONS = load_assets("assets\\Icons", (icon_size, icon_size))
 ReSizedIcons = load_assets("assets\\Icons", (icon_size, icon_size))
 ICON_NAMES = list(ICONS.keys())
 iconDisplayMargins = 30
+
+WINDOW_DECORATOR_ICONS = load_assets("assets\\Window Decorators")
+DECORATOR_SIZE = 16
