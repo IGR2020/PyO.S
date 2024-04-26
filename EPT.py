@@ -5,9 +5,8 @@ from os.path import join, isfile
 pygame.font.init()
 
 
-def blit_text(
-    win, text, pos, colour=(0, 0, 0), size=30, font="arialblack", blit=True
-):
+def blit_text(win, text, pos, colour=(0, 0, 0), size=30, font="arialblack", blit=True):
+    text = str(text)
     font_style = pygame.font.SysFont(font, size)
     text_surface = font_style.render(text, False, colour)
     if blit:
@@ -49,5 +48,6 @@ def load_assets(path, size: int = None):
             )
     return sprites
 
+
 def remove_prefix(str: str, prefix: str):
-    return str[len(prefix):] if str.startswith(prefix) else str
+    return str[len(prefix) :] if str.startswith(prefix) else str

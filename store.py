@@ -15,10 +15,12 @@ def save_data(path, data):
 
 def getSize(path):
     total = 0
+    break_down = {}
     with os.scandir(path) as it:
         for entry in it:
             if entry.is_file():
                 total += entry.stat().st_size
+                break_down[entry.name] = entry.stat().st_size
             elif entry.is_dir():
                 total += getSize(entry.path)
-    return total
+    return total, break_down

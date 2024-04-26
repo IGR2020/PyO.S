@@ -14,9 +14,11 @@ mouse_down = False
 
 grabed_app = None
 
-selected = False # bool for checking if a previous obj was selected when mouse down
+selected = False  # bool for checking if a previous obj was selected when mouse down
 
 icons = generateIconButtons(WIDTH, HEIGHT, icon_size)
+
+ThisPC.install()
 
 running_apps = [ThisPC(100, 100, 800, 500)]
 
@@ -45,11 +47,15 @@ while run:
         if event.type == pg.VIDEORESIZE:
 
             WIDTH, HEIGHT = event.dict["size"]
-            localWallPaper = pg.transform.scale(WALLPAPERS[selected_wallpaper], (WIDTH, HEIGHT))
-            icon_size = ICON_WIDTH_RATIO*WIDTH
+            localWallPaper = pg.transform.scale(
+                WALLPAPERS[selected_wallpaper], (WIDTH, HEIGHT)
+            )
+            icon_size = ICON_WIDTH_RATIO * WIDTH
 
             for icon_name in ICON_NAMES:
-                ReSizedIcons[icon_name] = pg.transform.scale(ICONS[icon_name], (icon_size, icon_size))
+                ReSizedIcons[icon_name] = pg.transform.scale(
+                    ICONS[icon_name], (icon_size, icon_size)
+                )
 
             icons = generateIconButtons(WIDTH, HEIGHT, icon_size)
 
@@ -63,9 +69,19 @@ while run:
 
             for i, app in enumerate(running_apps):
 
+                resize_clicked, resize_type = app.decorator.resize()
+
                 if app.decorator.close():
                     app.close()
                     running_apps.remove(app)
+                    selected = True
+                    break
+                
+                elif resize_clicked:
+                    if resize_type == "Maximise":
+                        app.fullScreen(WIDTH, HEIGHT)
+                    elif resize_type == "Fit":
+                        app.resize(1000, 600)
                     selected = True
                     break
 
@@ -73,13 +89,15 @@ while run:
                     grabed_app = i
                     selected = True
                     break
-            
+
             if selected:
                 continue
 
             for icon in icons:
                 if icon.clicked():
-                    running_apps.append(getIconNameLink(icon.info)(icon.x, icon.y, 1000, 600))
+                    running_apps.append(
+                        getIconNameLink(icon.info)(icon.x, icon.y, 1000, 600)
+                    )
                     selected = True
 
         if event.type == pg.MOUSEBUTTONUP:
@@ -93,4 +111,3 @@ while run:
 
 pg.quit()
 quit()
-    
