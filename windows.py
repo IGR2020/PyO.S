@@ -5,7 +5,7 @@ from EPT import Button, blit_text, load_assets
 
 
 class Window(pg.Rect):
-    def __init__(self, x, y, width, height, name=None):
+    def __init__(self, x, y, width, height, name=None, *args):
         super().__init__(x, y, width, height)
         self.window = pg.Surface((width, height))
         self.decorator = WindowDecorator(x, y-DECORATOR_SIZE, width, DECORATOR_SIZE, name)
@@ -14,11 +14,17 @@ class Window(pg.Rect):
 
     def close(self): ...
 
-    def resize(self, width, height): ...
+    def resize(self, width, height):
+        self.width = width - DECORATOR_SIZE
+        self.height = height
+        self.window = pg.transform.scale(self.window, (self.width, self.height))
 
     def install(): ...
 
-    def fullScreen(self, window_width, window_height): ...
+    def fullScreen(self, window_width, window_height):
+        self.width = window_width - DECORATOR_SIZE
+        self.height = window_height
+        self.window = pg.transform.scale(self.window, (self.width, self.height))
 
     def resizeDecorator(self):
         self.decorator.width = self.width
@@ -37,15 +43,17 @@ class Window(pg.Rect):
         self.y += rel_y
         self.decorator.move(rel_x, rel_y)
 
+    def update(*args): ...
+
 
 class ThisPC(Window):
-    def __init__(self, x, y, width, height):
+    def __init__(self, x, y, width, height, *args):
         super().__init__(x, y, width, height, "This P.C")
         self.data = load_data("AppData\\This PC.pkl")
         self.assets = load_assets("assets\\This P.C")
         self.reSizedBackGround = pg.transform.scale(self.assets["BackGround1"], (self.width, self.height))
 
-    def install():
+    def install(*args):
         total, break_down = getSize("AppData")
         data = {"Available Storage": "~", "Used Storage": total, "Break Down": break_down}
         save_data("AppData\\This PC.pkl", data)
@@ -60,20 +68,20 @@ class ThisPC(Window):
         screen.blit(self.window, self)
 
     def fullScreen(self, window_width, window_height):
-        self.window = pg.transform.scale(self.window, (window_width, window_height-DECORATOR_SIZE))
-        self.reSizedBackGround = pg.transform.scale(self.assets["BackGround1"], (window_width, window_height-DECORATOR_SIZE))
-        self.width = window_width
-        self.height = window_width
+        super().fullScreen(window_width, window_height)
+        self.reSizedBackGround = pg.transform.scale(self.assets["BackGround1"], (self.width, self.height))
         self.resizeDecorator()
         self.rePosition(0, 0+DECORATOR_SIZE)
 
     def resize(self, width, height):
-        self.window = pg.transform.scale(self.window, (width, height-DECORATOR_SIZE))
+        super().resize(width, height)
         self.reSizedBackGround = pg.transform.scale(self.assets["BackGround1"], (width, height-DECORATOR_SIZE))
-        self.width = width
-        self.height = height
         self.resizeDecorator()
         self.rePosition(0, 0+DECORATOR_SIZE)
+
+    def update(self):
+        self.install()
+        self.data = load_data("AppData\\This PC.pkl")
 
 
 class WindowDecorator(pg.Rect):
@@ -151,3 +159,17 @@ class WindowDecorator(pg.Rect):
             1,
             self.resize_button.info
         )
+
+class BenchMarker(Window):
+    def __init__(self, x, y, width, height, clock: pg.time.Clock, *args):
+        super().__init__(x, y, width, height, "BenchMarker")
+        self.clock = clock
+
+    def display(self, screen):
+        self.window.fill((0, 0, 0))
+        blit_text(self.window, "FPS", (10, 10), (255, 255, 255), size=30)
+        blit_text(self.window, round(self.clock.get_fps()), (10, 50), (255, 255, 255), size=30)
+        self.decorator.display(screen)
+        screen.blit(self.window, self)
+
+

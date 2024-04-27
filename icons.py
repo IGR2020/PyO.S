@@ -3,7 +3,7 @@
 from loader import *
 import pygame as pg
 from EPT import Button
-from windows import ThisPC, Window
+from windows import ThisPC, Window, BenchMarker
 
 
 def generateIconButtons(width, height, icon_size):
@@ -29,7 +29,6 @@ def generateIconButtons(width, height, icon_size):
 
 
 def getIconNameLink(name):
-    if name == "This P.C":
-        return ThisPC
-    else:
-        return Window
+    if name == "This P.C": return ThisPC
+    elif name == "BenchMarker": return BenchMarker
+    else: return Window

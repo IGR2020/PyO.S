@@ -18,8 +18,6 @@ selected = False  # bool for checking if a previous obj was selected when mouse 
 
 icons = generateIconButtons(WIDTH, HEIGHT, icon_size)
 
-ThisPC.install()
-
 running_apps = [ThisPC(100, 100, 800, 500)]
 
 
@@ -67,7 +65,7 @@ while run:
             if selected:
                 continue
 
-            for i, app in enumerate(running_apps):
+            for app in reversed(running_apps):
 
                 resize_clicked, resize_type = app.decorator.resize()
 
@@ -86,7 +84,8 @@ while run:
                     break
 
                 elif app.decorator.grab():
-                    grabed_app = i
+                    app.update()
+                    grabed_app = running_apps.index(app)
                     selected = True
                     break
 
@@ -96,7 +95,7 @@ while run:
             for icon in icons:
                 if icon.clicked():
                     running_apps.append(
-                        getIconNameLink(icon.info)(icon.x, icon.y, 1000, 600)
+                        getIconNameLink(icon.info)(icon.x, icon.y, 1000, 600, clock)
                     )
                     selected = True
 
@@ -106,7 +105,7 @@ while run:
 
     rel_x, rel_y = pg.mouse.get_rel()
     if mouse_down and grabed_app is not None:
-        running_apps[i].move(rel_x, rel_y)
+        running_apps[grabed_app].move(rel_x, rel_y)
     display()
 
 pg.quit()
